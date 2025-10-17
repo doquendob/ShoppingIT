@@ -1,0 +1,69 @@
+@use "./variables" as *;
+@use "../../../styles/mixins" as *;
+@use "sass:color";
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  width: 96%;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: $color-primary;
+  color: $text-light;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .menu {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    .menuItem {
+      a {
+        color: $text-light;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: $accent;
+        }
+      }
+    }
+  }
+
+  .cta {
+    background-color: $accent;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: color.adjust($accent, $lightness: 15%, $space: hsl);
+    }
+  }
+
+  // Responsive behavior
+  @include respond-to("tablet") {
+    flex-direction: column;
+    gap: 1rem;
+
+    .menu {
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+  }
+}
