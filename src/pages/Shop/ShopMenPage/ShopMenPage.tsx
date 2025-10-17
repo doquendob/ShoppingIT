@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from "./ShopMenPage.module.scss"
 import ProductCard from '../../../components/product/ProductCard';
-import data from "../../../data/products";
+import data from "../../../data/MenProducts";
 
 const ShopMenPage = () => {
 

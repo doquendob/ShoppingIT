@@ -8,7 +8,7 @@ interface ProductCardProps {
     products: Product[];
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({products}) => {
+const ProductCard: React.FC<ProductCardProps> = ({ products }) => {
     const { addItem, storeItem, storedItems } = useCart();
 
     const handleCartItems = (product: Product) => {
@@ -28,6 +28,7 @@ const ProductCard: React.FC<ProductCardProps> = ({products}) => {
                     <div>
                         <Button children="Add to Cart" onClick={() => handleCartItems(product)} />
                     </div>
+                    <></>
                 </div>
             ))}
         </>
