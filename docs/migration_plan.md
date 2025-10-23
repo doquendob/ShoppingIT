@@ -577,7 +577,7 @@ features/[feature-name]/
 └── index.ts           # Public API (barrel export)
 ```
 
-## Template Example (Employees feature)
+## B. Template Example (Employees feature)
 
 ```
 features/employees/
@@ -604,7 +604,7 @@ features/employees/
 └── index.ts                   # Export public API
 ```
 
-### B. Import Convention Examples
+### C. Import Convention Examples
 
 ```typescript
 // ✅ Good - Import from feature public API
@@ -617,7 +617,7 @@ import { Button, Modal } from '@shared/components/ui';
 import { EmployeeCard } from '@features/employees/components/EmployeeCard';
 ```
 
-### C. Cross-Feature Communication
+### D. Cross-Feature Communication
 
 When features need to communicate:
 1. Use Zustand for shared state
