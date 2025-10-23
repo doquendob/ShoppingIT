@@ -2,10 +2,10 @@
 
 ## Executive Summary
 
-This document outlines the complete plan to restructure the Skills App from a technical layer architecture to a feature-based architecture.
+This document outlines the complete plan to restructure the Talent App from a technical layer architecture to a feature-based architecture.
 
-**Estimated Duration:** 8 weeks  
-**Team Size:** 3-5 developers  
+**Estimated Duration:** (We can estimate each phase maybe a meeting works) 
+**Team Size:** 3 developers  
 **Risk Level:** Medium (mitigated by incremental approach)
 
 ## Current State Analysis
@@ -90,7 +90,7 @@ src/
 
 ## Migration Phases
 
-### Phase 1: Preparation (Week 1)
+### Phase 1: Preparation
 
 **Goal:** Set up infrastructure for migration without breaking existing code
 
@@ -117,7 +117,7 @@ src/
 
 ---
 
-### Phase 2: Shared Components Migration (Week 2)
+### Phase 2: Shared Components Migration
 
 **Goal:** Move truly shared/reusable components to `shared/`
 
@@ -170,11 +170,11 @@ npm test
 
 ---
 
-### Phase 3: Feature Migration (Weeks 3-6)
+### Phase 3: Feature Migration
 
 **Goal:** Migrate features one at a time, starting with simplest
 
-#### Phase 3.1: Links Feature (Week 3, Day 1-2)
+#### Phase 3.1: Links Feature
 
 **Complexity:** Low (1 container, minimal dependencies)
 
@@ -200,10 +200,17 @@ npm test
 ```typescript
 // OLD: Redux action
 // actions/linksActions.js
-export const fetchLinks = () => async (dispatch) => {
-  dispatch({ type: FETCH_LINKS_REQUEST });
-  const response = await api.get('/links');
-  dispatch({ type: FETCH_LINKS_SUCCESS, payload: response.data });
+const getLinks = () => (dispatch) => {
+  dispatch(loadLinks());
+
+  peopleApi()
+    .get('/links')
+    .then((response) => {
+      dispatch(successLinks(response.data));
+    })
+    .catch((Error) => {
+      dispatch(failLinks(Error));
+    });
 };
 
 // NEW: React Query hook
@@ -214,13 +221,13 @@ import { apiClient } from '@shared/services';
 export const useLinks = () => {
   return useQuery({
     queryKey: ['links'],
-    queryFn: () => apiClient.get('/links'),
+    queryFn: () => peopleApi.get('/links'),
   });
 };
 
 export const useCreateLink = () => {
   return useMutation({
-    mutationFn: (linkData) => apiClient.post('/links', linkData),
+    mutationFn: (linkData) => peopleApi.post('/links', linkData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['links'] });
     },
@@ -237,7 +244,7 @@ export const useLinksUIStore = create((set) => ({
 }));
 ```
 
-#### Phase 3.2: Notifications Feature (Week 3, Day 3-4)
+#### Phase 3.2: Notifications Feature 
 
 **Complexity:** Low-Medium
 
@@ -260,7 +267,7 @@ export const useLinksUIStore = create((set) => ({
 - `reducers/systemAlertsReducer.js` → `features/notifications/store/`
 - `hooks/useToast.js` → `features/notifications/hooks/`
 
-#### Phase 3.3: Staffy Feature (Week 3, Day 5)
+#### Phase 3.3: Staffy Feature
 
 **Complexity:** Low
 
@@ -271,7 +278,7 @@ export const useLinksUIStore = create((set) => ({
 - [ ] Update imports
 - [ ] Test
 
-#### Phase 3.4: Projects Feature (Week 4, Day 1-2)
+#### Phase 3.4: Projects Feature 
 
 **Complexity:** Medium
 
@@ -284,7 +291,7 @@ export const useLinksUIStore = create((set) => ({
 - [ ] Update imports
 - [ ] Test
 
-#### Phase 3.5: Certifications Feature (Week 4, Day 3-5)
+#### Phase 3.5: Certifications Feature
 
 **Complexity:** Medium
 
@@ -297,7 +304,7 @@ export const useLinksUIStore = create((set) => ({
 - [ ] Update imports
 - [ ] Test
 
-#### Phase 3.6: Dashboard Feature (Week 5, Day 1-2)
+#### Phase 3.6: Dashboard Feature
 
 **Complexity:** Medium (multiple dashboard variants)
 
@@ -309,7 +316,7 @@ export const useLinksUIStore = create((set) => ({
 - [ ] Update imports
 - [ ] Test all dashboard variants
 
-#### Phase 3.7: Technologies Feature (Week 5, Day 3-5)
+#### Phase 3.7: Technologies Feature 
 
 **Complexity:** High (complex, many dependencies)
 
@@ -329,7 +336,7 @@ export const useLinksUIStore = create((set) => ({
 - Store: `technologiesActions.js`, `technologiesReducer.js`, `categoriesActions.js`, `categoriesReducer.js`
 - Models: `Technology.js`, `Category.js`
 
-#### Phase 3.8: Admin Feature (Week 6, Day 1-3)
+#### Phase 3.8: Admin Feature 
 
 **Complexity:** High (permissions system)
 
@@ -343,7 +350,7 @@ export const useLinksUIStore = create((set) => ({
 - [ ] Update imports
 - [ ] Test permission system thoroughly
 
-#### Phase 3.9: Employees Feature (Week 6, Day 4-5)
+#### Phase 3.9: Employees Feature 
 
 **Complexity:** Very High (most complex, many dependencies)
 
@@ -365,7 +372,7 @@ export const useLinksUIStore = create((set) => ({
 - Store: `employeesActions.js`, `employeesReducer.js`
 - Models: `Gapster.js`, `TechnologyGapster.js`
 
-#### Phase 3.10: Auth Feature (Week 7, Day 1-2)
+#### Phase 3.10: Auth Feature
 
 **Complexity:** Critical (affects entire app)
 
@@ -386,7 +393,7 @@ export const useLinksUIStore = create((set) => ({
 
 ---
 
-### Phase 4: Final State Management Cleanup (Week 7, Day 3-5)
+### Phase 4: Final State Management Cleanup
 
 **Goal:** Remove remaining Redux/legacy code and verify all features use React Query + Zustand
 
@@ -411,7 +418,7 @@ export const useLinksUIStore = create((set) => ({
 
 ✅ React Query + Zustand:
 - ✅ features/[feature]/hooks/use*.ts (React Query)
-- ✅ features/[feature]/stores/*UIStore.ts (Zustand, optional)
+- ✅ features/[feature]/stores/*UIStore.ts (Zustand)
 - ✅ app/providers/AppProviders.tsx (includes QueryClientProvider)
 ```
 
@@ -430,7 +437,7 @@ export const useLinksUIStore = create((set) => ({
 
 ---
 
-### Phase 5: Routing & Final Cleanup (Week 8)
+### Phase 5: Routing & Final Cleanup 
 
 **Goal:** Clean up routing and finalize migration
 
@@ -504,11 +511,6 @@ export const useLinksUIStore = create((set) => ({
    - Use if needed for parallel work
    - Enable gradual rollout
 
-3. **Communication**
-   - Daily standup updates
-   - Slack channel for questions
-   - Weekly retrospectives
-
 4. **Rollback Plan**
    - Keep old structure until fully migrated
    - Git tags at each phase
@@ -533,61 +535,25 @@ export const useLinksUIStore = create((set) => ({
 
 ## Post-Migration
 
-### Immediate (Week 9)
+### Immediate
 
 - [ ] Team retrospective
 - [ ] Update README
 - [ ] Create "new feature" template and guide
 - [ ] Archive migration documentation
 
-### Short-term (Month 2)
+### Short-term
 
 - [ ] Monitor for issues
 - [ ] Gather team feedback
 - [ ] Refine patterns based on learnings
 
-### Long-term (Quarter 2)
-
-- [ ] Evaluate for code splitting opportunities
-- [ ] Consider micro-frontend architecture
-- [ ] Continuous improvement based on growth
-
 ## Resources
-
-### Team Assignments
-
-- **Migration Lead:** [Name] - Overall coordination, unblocking
-- **Architecture Review:** [Name] - Review structure decisions
-- **Phase 1-2 Lead:** [Name] - Setup and shared components
-- **Phase 3 Coordinator:** [Name] - Feature migrations
-- **Testing Lead:** [Name] - Test strategy and validation
-- **Documentation:** [Name] - Keep docs updated
 
 ### Time Allocation
 
-- 50% of developer time for 8 weeks
-- Protected from other work during migration
-- Daily 15-min sync meetings
-
-### Tools
-
-- GitLab for version control and MRs
-- Jira/GitLab Issues for task tracking
-- Slack for communication
-- [Migration scripts](./scripts/) for automation
-
-## Timeline
-
-```
-Week 1:  Phase 1 (Preparation)
-Week 2:  Phase 2 (Shared Components)
-Week 3:  Phase 3.1-3.3 (Links, Notifications, Staffy)
-Week 4:  Phase 3.4-3.5 (Projects, Certifications)
-Week 5:  Phase 3.6-3.7 (Dashboard, Technologies)
-Week 6:  Phase 3.8-3.9 (Admin, Employees)
-Week 7:  Phase 3.10, Phase 4 (Auth, Redux Cleanup)
-Week 8:  Phase 5 (Routing, Final Cleanup)
-```
+- 50% of developer time
+- Twice a week 15-min sync meetings (just if it works for everyone)
 
 ## Appendix
 
@@ -597,13 +563,45 @@ Week 8:  Phase 5 (Routing, Final Cleanup)
 features/[feature-name]/
 ├── components/         # Feature-specific UI components
 ├── containers/         # Page-level components
-├── store/             # Redux actions & reducers
-│   ├── [feature]Actions.js
-│   └── [feature]Reducer.js
+├── hooks/             # React Query hooks for API calls
+│   ├── use[Feature]s.ts       # Query hook (GET)
+│   ├── use[Feature].ts        # Single item query
+│   ├── useCreate[Feature].ts  # Mutation hook (POST)
+│   ├── useUpdate[Feature].ts  # Mutation hook (PUT)
+│   └── useDelete[Feature].ts  # Mutation hook (DELETE)
+├── stores/            # Zustand stores for UI-only state (optional)
+│   └── [feature]UIStore.ts
 ├── models/            # Business logic classes
-├── hooks/             # Feature-specific hooks
-├── utils/             # Feature-specific utilities (if needed)
+├── types/             # TypeScript types (recommended)
+│   └── index.ts
 └── index.ts           # Public API (barrel export)
+```
+
+## Template Example (Employees feature)
+
+```
+features/employees/
+├── components/
+│   ├── EmployeeCard/
+│   ├── EmployeeList/
+│   └── EmployeeProfile/
+├── containers/
+│   ├── TalentSearch/
+│   └── EmployeeDashboard/
+├── hooks/                      # React Query hooks
+│   ├── useEmployees.ts        # List all employees
+│   ├── useEmployee.ts         # Get single employee
+│   ├── useCreateEmployee.ts   # Create new employee
+│   ├── useUpdateEmployee.ts   # Update employee
+│   └── useDeleteEmployee.ts   # Delete employee
+├── stores/                     # Zustand for UI state only
+│   └── employeesUIStore.ts    # Selected employee, filter modal, etc.
+├── models/
+│   ├── Employee.ts
+│   └── TechnologyEmployee.ts
+├── types/
+│   └── index.ts               # Employee, EmployeeFilters, etc.
+└── index.ts                   # Export public API
 ```
 
 ### B. Import Convention Examples
@@ -622,7 +620,7 @@ import { EmployeeCard } from '@features/employees/components/EmployeeCard';
 ### C. Cross-Feature Communication
 
 When features need to communicate:
-1. Use Redux for shared state
+1. Use Zustand for shared state
 2. Use event emitters for decoupled events
 3. Create a shared service in `shared/services/`
 4. Last resort: Direct import from feature public API
